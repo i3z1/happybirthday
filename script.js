@@ -48,8 +48,10 @@ function stopFireworks() {
     }
 }
 
-// Countdown Timer
-const countdownDate = new Date("2024-11-29T05:15:00");
+// Calculate the next birthday date
+const now = new Date();
+const targetYear = (now.getMonth() > 2 || (now.getMonth() === 2 && now.getDate() > 17)) ? now.getFullYear() + 1 : now.getFullYear();
+const countdownDate = new Date(`${targetYear}-03-17T05:15:00`);
 console.log("Countdown Date:", countdownDate); // Debugging line
 
 const countdownFunction = setInterval(() => {

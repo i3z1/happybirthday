@@ -85,7 +85,7 @@ const birthYear = 2005; // Replace with actual birth year
 const isBirthdayPassedThisYear = now.getMonth() > 2 || 
     (now.getMonth() === 2 && now.getDate() > 17);
 const targetYear = isBirthdayPassedThisYear ? now.getFullYear() + 1 : now.getFullYear();
-const countdownDate = new Date(targetYear, 2, 16, 24, 49, 0); // March 17th 12:46 PM
+const countdownDate = new Date(targetYear, 2, 16, 24, 39, 0); // March 17th 12:46 PM
 const age = targetYear - birthYear;
 
 // Progress Bar

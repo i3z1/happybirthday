@@ -1,102 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday, Lama!</title>
+    <title>عيد ميلاد سعيد يا لما!</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Pacifico&family=Roboto&display=swap" rel="stylesheet">
+    <!-- Fireworks Library -->
+    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2/dist/fireworks.js"></script>
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Background Video -->
-    <video autoplay muted loop id="background-video">
+    <video id="background-video">
         <source src="videos/background.mp4" type="video/mp4">
-        <source src="videos/background.webm" type="video/webm">
         Your browser does not support the video tag.
     </video>
-    
-    <!-- Pink Overlay for better readability -->
+    <!-- Pink Overlay -->
     <div class="overlay"></div>
-
     <!-- Fireworks Canvas -->
     <canvas id="fireworks-canvas"></canvas>
-
+    <!-- Header -->
     <header>
-        <h1 id="main-heading">🎉 Happy Birthday, Lama! 🎂</h1>
-        <p>Wishing you a day filled with love, joy, and unforgettable moments.</p>
+        <div id="birthday-header" class="hidden">
+            <h1 id="main-heading">🎉 عيد ميلاد سعيد يا <span class="highlight">لما</span>!</h1>
+            <h2 id="age-display"></h2>
+        </div>
+        <p class="hidden" id="birthday-message">أتمنى لك يومًا مليئًا بالحب والفرح</p>
     </header>
-
+    <!-- Countdown Section -->
     <section id="countdown">
-        <h2>Countdown to Your Special Day</h2>
+        <h2>العد التنازلي لعيد ميلادك</h2>
+        <div id="countdown-progress">
+            <div id="progress-bar"></div>
+        </div>
         <div id="timer">
             <div class="time-box">
                 <span id="days">0</span>
-                <div class="label">Days</div>
+                <div class="label">أيام</div>
             </div>
             <div class="time-box">
                 <span id="hours">0</span>
-                <div class="label">Hours</div>
+                <div class="label">ساعات</div>
             </div>
             <div class="time-box">
                 <span id="minutes">0</span>
-                <div class="label">Minutes</div>
+                <div class="label">دقائق</div>
             </div>
             <div class="time-box">
                 <span id="seconds">0</span>
-                <div class="label">Seconds</div>
+                <div class="label">ثواني</div>
             </div>
         </div>
     </section>
-
-    <!-- Special Message Section (Initially Hidden) -->
-    <section id="special-message" class="hidden">
-        <h2>Surprise!</h2>
-        <p class="special-text">May your birthday be as wonderful and inspiring as you are. I love you more than words can express!</p>
-        <img src="images/surprise.jpg" alt="Surprise Image" class="special-image">
-        <!-- Discord Server Button -->
-        <a href="https://discord.gg/your-invite-code" target="_blank" class="discord-button">
-            🎁 Join Our Discord Server
-        </a>
+    <!-- Personalized Message -->
+    <section id="personal-message" class="hidden">
+        <h2>رسالة خاصة</h2>
+        <p class="story-text">
+            يا لما، كل عام وأنتِ بألف خير! 🎂<br>
+            أنتي مصدر إلهام وسعادة لكل من حولك. أتمنى لك يومًا مليئًا بالحب والفرح والذكريات الجميلة.
+        </p>
     </section>
-
-    <section id="gallery">
-        <h2>Our Memories</h2>
-        <div class="gallery-container">
-            <img src="images/photo1.jpg" alt="Memory 1">
-            <img src="images/photo2.jpg" alt="Memory 2">
-            <img src="images/photo3.jpg" alt="Memory 3">
-            <!-- Add more images as needed -->
+    <!-- Virtual Gift Unboxing -->
+    <section id="gift-unboxing" class="hidden">
+        <h2>افتح هديتك!</h2>
+        <div class="gift-box" onclick="revealGift()">
+            🎁
         </div>
+        <p id="gift-message" class="hidden">مفاجأة! 🎉   https://discord.gift/MFUNppEPtptt9V8v</p>
     </section>
-
+    <!-- Footer -->
     <footer>
-        <p>Created with ❤️ by i3z</p>
+        <p>صمم بواسطة <span class="highlight">i3z</span> مع ❤️</p>
     </footer>
-
-    <!-- Confetti Animation -->
-    <canvas id="confetti-canvas"></canvas>
-
-    <!-- Confetti Animation Library -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-
-    <!-- Fireworks Animation Library -->
-    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2/dist/fireworks.js"></script>
-
-    <!-- Background Music -->
-    <audio id="background-music" src="music/favorite-song.mp3" loop preload="auto"></audio>
-
-    <!-- Special Birthday Song -->
+    <!-- Audio -->
     <audio id="birthday-song" src="music/birthday-song.mp3" preload="auto"></audio>
-
+    <audio id="background-music" src="music/favorite-song.mp3" loop preload="auto"></audio>
+    <audio id="yay-sound" src="sounds/yay.mp3" preload="auto"></audio>
     <!-- Audio Controls -->
     <div id="audio-controls" class="audio-controls">
-        <button id="pause-bg-music">⏸️ Pause Music</button>
-        <button id="mute-bg-music">🔊 Mute</button>
+        <button id="pause-bg-music">⏸️ إيقاف الموسيقى</button>
+        <button id="mute-bg-music">🔊 كتم</button>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>

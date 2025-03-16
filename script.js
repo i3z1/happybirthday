@@ -1,4 +1,4 @@
-// Initialize Fireworks (Will be started when the countdown ends)
+// Initialize Fireworks
 let fireworksInstance;
 const fireworksCanvas = document.getElementById('fireworks-canvas');
 
@@ -8,16 +8,16 @@ function startFireworks() {
         acceleration: 1.05,
         friction: 0.98,
         gravity: 1.5,
-        particles: 200,
+        particles: 300,
         trace: 3,
-        explosion: 5,
+        explosion: 10,
         autoresize: true,
         brightness: {
-            min: 50,
-            max: 80,
+            min: 60,
+            max: 90,
             decay: {
-                min: 0.015,
-                max: 0.03
+                min: 0.02,
+                max: 0.05
             }
         },
         boundaries: {
@@ -26,192 +26,246 @@ function startFireworks() {
             width: fireworksCanvas.clientWidth,
             height: fireworksCanvas.clientHeight
         },
-        sound: {
-            enable: true,
-            files: [
-                'sounds/firework1.mp3',
-                'sounds/firework2.mp3',
-                'sounds/firework3.mp3'
-            ],
-            volume: {
-                min: 4,
-                max: 8
-            }
-        },
     });
     fireworksInstance.start();
 }
 
-function stopFireworks() {
-    if (fireworksInstance) {
-        fireworksInstance.stop();
-    }
-}
+// Video Handling System
+const videoManager = (() => {
+    const video = document.getElementById('background-video');
+    let isVideoReady = false;
+    let hasStarted = false;
 
-// Calculate the next birthday date
-const now = new Date();
-const targetYear = (now.getMonth() > 2 || (now.getMonth() === 2 && now.getDate() > 17)) ? now.getFullYear() + 1 : now.getFullYear();
-const countdownDate = new Date(`${targetYear}-03-17T05:15:00`);
-console.log("Countdown Date:", countdownDate); // Debugging line
+    video.addEventListener('loadedmetadata', () => {
+        isVideoReady = true;
+    });
 
-const countdownFunction = setInterval(() => {
-    const now = new Date().getTime();
-    const distance = countdownDate - now;
+    return {
+        async playFrom(seconds) {
+            if (!isVideoReady || hasStarted) return;
+            try {
+                video.currentTime = seconds;
+                video.muted = false;
+                await video.play();
+                hasStarted = true;
+                isVideoReady = false;
 
-    if (distance < 0) {
-        clearInterval(countdownFunction);
-        // Remove the countdown section smoothly
-        const countdownSection = document.getElementById('countdown');
-        countdownSection.style.opacity = '0';
-        countdownSection.style.transition = 'opacity 1s ease-out';
+                // Listen for the end of the video
+                video.addEventListener('ended', () => {
+                    this.removeVideoAndPlaySong();
+                }, { once: true });
+            } catch (error) {
+                console.error('Failed to play video:', error);
+                this.showInteractionPrompt();
+            }
+        },
+        showInteractionPrompt() {
+            const prompt = document.createElement('div');
+            prompt.className = 'video-prompt';
+            prompt.textContent = 'انقر هنا لبدء الفيديو!';
+            document.body.appendChild(prompt);
+            document.addEventListener('click', () => {
+                this.playFrom(0);
+                prompt.remove();
+            }, { once: true });
+        },
+        removeVideoAndPlaySong() {
+            // Remove the video element
+            video.remove();
 
-        setTimeout(() => {
-            countdownSection.style.display = 'none';
-            revealSpecialMessage(); // Reveal the special message
-        }, 1000);
-
-        launchConfetti(); // Trigger confetti
-        startFireworks(); // Start fireworks
-        playBirthdaySong(); // Play the special birthday song
-        animateHeader(); // Animate the header
-        return;
-    }
-
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    document.getElementById("days").innerText = days;
-    document.getElementById("hours").innerText = hours;
-    document.getElementById("minutes").innerText = minutes;
-    document.getElementById("seconds").innerText = seconds;
-}, 1000);
-
-// Confetti Function
-function launchConfetti() {
-    const duration = 10 * 1000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-    function randomInRange(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-
-    const interval = setInterval(function() {
-        const timeLeft = animationEnd - Date.now();
-
-        if (timeLeft <= 0) {
-            return clearInterval(interval);
+            // Play the birthday song
+            playBirthdaySong();
         }
+    };
+})();
 
-        const particleCount = 50 * (timeLeft / duration);
-        confetti(Object.assign({}, defaults, { 
-            particleCount, 
-            origin: { x: randomInRange(0, 1), y: Math.random() - 0.2 }
-        }));
-    }, 250);
+// Date Calculations
+const now = new Date();
+const birthYear = 2005; // Replace with actual birth year
+const isBirthdayPassedThisYear = now.getMonth() > 2 || 
+    (now.getMonth() === 2 && now.getDate() > 17);
+const targetYear = isBirthdayPassedThisYear ? now.getFullYear() + 1 : now.getFullYear();
+const countdownDate = new Date(targetYear, 2, 16, 24, 40, 0); // March 17th 12:46 PM
+const age = targetYear - birthYear;
+
+// Progress Bar
+const progressBar = document.getElementById('progress-bar');
+const totalTime = countdownDate - new Date();
+function updateProgressBar() {
+    const remainingTime = countdownDate - new Date();
+    const progress = ((totalTime - remainingTime) / totalTime) * 100;
+    progressBar.style.width = `${progress}%`;
 }
+setInterval(updateProgressBar, 1000);
 
-// Play Birthday Song
-function playBirthdaySong() {
-    const birthdaySong = document.getElementById('birthday-song');
-    birthdaySong.play().then(() => {
-        console.log("Birthday song is playing.");
-    }).catch((error) => {
-        console.log("Autoplay prevented. Creating a fallback button to play the birthday song.");
+// Countdown System
+const countdownSystem = (() => {
+    let intervalId;
+    return {
+        start() {
+            intervalId = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = countdownDate - now;
 
-        // Create a temporary button to trigger audio playback
-        const playButton = document.createElement('button');
-        playButton.innerText = "🎶 Play Birthday Song 🎶";
-        playButton.style.position = 'fixed';
-        playButton.style.top = '50%';
-        playButton.style.left = '50%';
-        playButton.style.transform = 'translate(-50%, -50%)';
-        playButton.style.padding = '20px 40px';
-        playButton.style.fontSize = '1.5em';
-        playButton.style.backgroundColor = '#ff6f61';
-        playButton.style.color = '#fff';
-        playButton.style.border = 'none';
-        playButton.style.borderRadius = '10px';
-        playButton.style.cursor = 'pointer';
-        playButton.style.zIndex = '1000';
-        playButton.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
-        playButton.style.transition = 'background-color 0.3s, transform 0.3s';
+                // Video trigger at 10 seconds
+                if (distance <= 16000 && distance > 0) {
+                    videoManager.playFrom(0);
+                }
 
-        // Add hover effects
-        playButton.addEventListener('mouseenter', () => {
-            playButton.style.backgroundColor = '#e65b50';
-            playButton.style.transform = 'translate(-50%, -50%) scale(1.05)';
-        });
+                // Countdown expiration
+                if (distance < 0) {
+                    clearInterval(intervalId);
+                    this.triggerCelebration();
+                    return;
+                }
 
-        playButton.addEventListener('mouseleave', () => {
-            playButton.style.backgroundColor = '#ff6f61';
-            playButton.style.transform = 'translate(-50%, -50%) scale(1)';
-        });
+                // Update display
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        // Play song on button click
-        playButton.addEventListener('click', () => {
-            birthdaySong.play().then(() => {
-                console.log("Birthday song is playing after user interaction.");
-                document.body.removeChild(playButton);
-            }).catch((err) => {
-                console.log("Failed to play the birthday song:", err);
-            });
-        });
+                document.getElementById("days").innerText = days;
+                document.getElementById("hours").innerText = hours;
+                document.getElementById("minutes").innerText = minutes;
+                document.getElementById("seconds").innerText = seconds;
+            }, 1000);
+        },
+        triggerCelebration() {
+            // Hide countdown
+            document.getElementById('countdown').style.display = 'none';
 
-        document.body.appendChild(playButton);
-    });
-}
+            // Show birthday elements
+            document.getElementById('birthday-header').classList.add('show');
+            document.getElementById('birthday-message').classList.add('show');
+            document.getElementById('age-display').textContent = age;
+            document.getElementById('personal-message').classList.remove('hidden');
+            document.getElementById('gift-unboxing').classList.remove('hidden');
 
-// Reveal Special Message
-function revealSpecialMessage() {
-    const specialMessage = document.getElementById('special-message');
-    specialMessage.classList.remove('hidden');
-    specialMessage.classList.add('show');
-}
+            // Trigger effects
+            startFireworks();
+            triggerBigExplosion();
+            playYaySound();
+            triggerPartyEmojis();
+        }
+    };
+})();
 
-// Animate Header
-function animateHeader() {
-    const header = document.getElementById('main-heading');
-    header.classList.add('animated-header');
+// Start the countdown
+countdownSystem.start();
+
+// Gift Box Animation
+function revealGift() {
+    const gift = document.querySelector('.gift-box');
+    gift.style.animation = 'giftOpen 0.8s forwards';
+    
     setTimeout(() => {
-        header.classList.remove('animated-header');
-    }, 2000); // Duration matches the CSS animation duration
+        document.getElementById('gift-message').classList.remove('hidden');
+        confetti({
+            particleCount: 200,
+            angle: 60,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#ff6f61', '#ff9a6b', '#ffcc66']
+        });
+    }, 800);
 }
 
-// Background Music Controls
-const music = document.getElementById('background-music');
-const pauseBtn = document.getElementById('pause-bg-music');
-const muteBtn = document.getElementById('mute-bg-music');
-
-// Play Background Music Automatically with Fallback
-document.addEventListener('DOMContentLoaded', () => {
-    music.play().then(() => {
-        console.log("Background music is playing.");
-        pauseBtn.innerText = "⏸️ Pause Music";
-    }).catch((error) => {
-        console.log("Autoplay prevented for background music. User interaction required.");
-        // Optional: Notify user to interact to play music
+// Birthday Song
+function playBirthdaySong() {
+    const song = document.getElementById('birthday-song');
+    song.play().catch(() => {
+        const btn = document.createElement('button');
+        btn.textContent = 'تشغيل الأغنية';
+        btn.style = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            background: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 1000;
+        `;
+        btn.onclick = () => {
+            song.play();
+            btn.remove();
+        };
+        document.body.appendChild(btn);
     });
-});
+}
 
-// Pause/Play Background Music
-pauseBtn.addEventListener('click', () => {
-    if (!music.paused) {
-        music.pause();
-        pauseBtn.innerText = "▶️ Play Music";
-    } else {
-        music.play().then(() => {
-            pauseBtn.innerText = "⏸️ Pause Music";
-        }).catch((error) => {
-            console.log("Failed to play background music:", error);
-        });
+// Big Explosion
+function triggerBigExplosion() {
+    const explosion = document.createElement('div');
+    explosion.className = 'big-explosion';
+    document.body.appendChild(explosion);
+    setTimeout(() => explosion.remove(), 1000);
+}
+
+// Yay Sound
+function playYaySound() {
+    const yaySound = document.getElementById('yay-sound');
+    yaySound.volume = 0.7;
+    yaySound.play().catch(console.error);
+}
+
+// Party Emojis
+function triggerPartyEmojis() {
+    const emojis = ['🎉', '🎈', '🥳', '🎁', '🎂'];
+    const container = document.createElement('div');
+    container.className = 'emoji-container';
+
+    for (let i = 0; i < 30; i++) {
+        const emoji = document.createElement('div');
+        emoji.className = 'party-emoji';
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        emoji.style = `
+            --x: ${Math.random() * 100}vw;
+            --y: ${Math.random() * 100}vh;
+            --speed: ${Math.random() * 2 + 1}s;
+        `;
+        container.appendChild(emoji);
     }
+
+    document.body.appendChild(container);
+    setTimeout(() => container.remove(), 3000);
+}
+
+// Enhanced Confetti
+function enhancedConfetti() {
+    const colors = ['#ff6f61', '#ff9a6b', '#ffcc66'];
+    const particles = [
+        { type: 'square', colors },
+        { type: 'circle', colors },
+        { type: 'star', colors }
+    ];
+
+    particles.forEach(p => {
+        confetti({
+            ...p,
+            particleCount: 100,
+            angle: 60,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }); // Added missing closing parenthesis here
+}
+// Mobile-Friendly Fixes
+document.addEventListener('touchstart', () => {
+    videoManager.playFrom(23);
 });
 
-// Mute/Unmute Background Music
-muteBtn.addEventListener('click', () => {
-    music.muted = !music.muted;
-    muteBtn.innerText = music.muted ? "🔇 Unmute" : "🔊 Mute";
+// Cleanup Functions
+function cleanup() {
+    document.getElementById('audio-controls').style.display = 'none';
+    document.querySelector('.overlay').style.opacity = 0.8;
+}
+
+// Final Setup
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.overlay').style.opacity = 0.5;
 });

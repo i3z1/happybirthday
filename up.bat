@@ -2,27 +2,28 @@
 echo Updating repository...
 
 
-
-:: Initialize Git repository (if not already initialized)
+:: Initialize repository (if needed)
 git init
 
-:: Add all changes to the staging area
+:: Create/switch to main branch
+git checkout -b main 2>nul || git checkout main
+
+:: Add all changes
 git add .
 
-:: Commit changes with a generic message
-git commit -m "Auto-update: Updated files and added new changes"
+:: Commit changes (with timestamp)
+for /f "tokens=1-3 delims=/ " %%a in ('date /t') do set DATE=%%c-%%b-%%a
+for /f "tokens=1-3 delims=:." %%a in ('time /t') do set TIME=%%a-%%b-%%c
+git commit -m "Auto-update: %DATE% %TIME%"
 
-:: Rename branch to main (if not already done)
-git branch -M main
-
-:: Add remote origin (if not already added)
+:: Link to remote repository
 git remote add origin https://github.com/i3z1/happybirthday.git 2>nul
 
-:: Pull changes from remote to avoid conflicts
-git pull origin main --rebase
+:: Forcefully pull and rebase to overwrite local conflicts
+git pull origin main --rebase --allow-unrelated-histories
 
-:: Push changes to remote repository
-git push -u origin main
+:: Force push to overwrite remote (use with caution!)
+git push -u origin main --force
 
 echo Repository updated successfully!
 pause

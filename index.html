@@ -202,6 +202,23 @@
             margin-bottom: 1rem;
         }
         
+        .gift-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--discord-blurple);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .gift-link:hover {
+            background-color: #4752C4;
+            transform: translateY(-2px);
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -252,7 +269,8 @@
         <div class="success-message" id="successMessage">
             <div class="success-icon">✓</div>
             <h2>اويلي مجودكا</h2>
-            <p>تستاهل النيترو </p>
+            <p>تستاهل النيترو</p>
+            <a href="https://discord.gift/YRvzBxYYASUU9QRa" class="gift-link" id="giftLink" target="_blank" style="display: none;">Click to Claim Your Nitro</a>
         </div>
     </div>
 
@@ -261,6 +279,7 @@
             const giftBox = document.getElementById('giftBox');
             const redeemBtn = document.getElementById('redeemBtn');
             const successMessage = document.getElementById('successMessage');
+            const giftLink = document.getElementById('giftLink');
             let isOpened = false;
             
             // Create ripple effect on gift box click
@@ -299,6 +318,7 @@
                 // Simulate API call
                 setTimeout(() => {
                     successMessage.style.display = 'block';
+                    giftLink.style.display = 'inline-block';
                     this.style.display = 'none';
                     createConfetti(true); // Big confetti celebration
                 }, 1500);

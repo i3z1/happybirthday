@@ -1,89 +1,364 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عيد ميلاد سعيد يا لما!</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Pacifico&family=Roboto&display=swap" rel="stylesheet">
-    <!-- Fireworks Library -->
-    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2/dist/fireworks.js"></script>
-    <!-- Confetti Library -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <title>Discord Nitro Gift</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        
+        :root {
+            --discord-blurple: #5865F2;
+            --discord-dark: #36393F;
+            --discord-darker: #2F3136;
+            --discord-green: #57F287;
+            --discord-pink: #EB459E;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--discord-dark);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at center, var(--discord-darker) 0%, #202225 100%);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header {
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 10px rgba(88, 101, 242, 0.5));
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--discord-blurple), var(--discord-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            color: #B9BBBE;
+            margin-bottom: 2rem;
+        }
+        
+        .gift-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 2rem;
+            perspective: 1000px;
+        }
+        
+        .gift-box {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s ease;
+            cursor: pointer;
+        }
+        
+        .gift-box.opened {
+            transform: translateY(-50px) rotateX(180deg);
+        }
+        
+        .gift-box .front, .gift-box .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .gift-box .front {
+            background: url('https://cdn.discordapp.com/attachments/1296847552175411201/1357787078087151817/IMG_4509.gif?ex=67f17941&is=67f027c1&hm=bd1530b62c3667d70924bcb4e1cf25c93b5a0229837a059596608267b2c374db&') center/contain no-repeat;
+        }
+        
+        .gift-box .back {
+            background: url('https://cdn.discordapp.com/attachments/1296847552175411201/1357787148975083901/af99d41c45dc828e68c9b87282122af4.png?ex=67f17952&is=67f027d2&hm=2840335d37afb84146f0f60a85eea640b61050a40fbd3c15bfa6d071444dde0d&') center/contain no-repeat;
+            transform: rotateX(180deg);
+        }
+        
+        .discord-profile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--discord-darker);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            border: 3px solid var(--discord-blurple);
+        }
+        
+        .profile-info {
+            text-align: left;
+        }
+        
+        .username {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .discriminator {
+            color: #B9BBBE;
+            font-size: 0.9rem;
+        }
+        
+        .nitro-badge {
+            background-color: var(--discord-pink);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+        }
+        
+        .redeem-btn {
+            background-color: var(--discord-green);
+            color: var(--discord-darker);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            display: block;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .redeem-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .redeem-btn:disabled {
+            background-color: #72767D;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--discord-pink);
+            opacity: 0;
+            z-index: 10;
+        }
+        
+        .success-message {
+            background-color: var(--discord-darker);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .success-icon {
+            font-size: 3rem;
+            color: var(--discord-green);
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Background Video -->
-    <video id="background-video">
-        <source src="videos/background.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-    <!-- Pink Overlay -->
-    <div class="overlay"></div>
-    <!-- Fireworks Canvas -->
-    <canvas id="fireworks-canvas"></canvas>
-    <!-- Header -->
-    <header>
-        <div id="birthday-header" class="hidden">
-            <h1 id="main-heading">🎉 عيد ميلاد سعيد يا <span class="highlight">لما</span>!</h1>
-            <h2 id="age-display"></h2>
+    <div class="container">
+        <div class="header">
+            <img src="https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" alt="Discord Logo" class="logo">
+            <h1>You've Received a Gift!</h1>
+            <p class="subtitle">Click the gift to reveal your surprise</p>
         </div>
-        <p class="hidden" id="birthday-message">أتمنى لك يومًا مليئًا بالحب والفرح</p>
-    </header>
-    <!-- Countdown Section -->
-    <section id="countdown">
-        <h2>العد التنازلي لعيد ميلادك</h2>
-        <div id="countdown-progress">
-            <div id="progress-bar"></div>
-        </div>
-        <div id="timer">
-            <div class="time-box">
-                <span id="days">0</span>
-                <div class="label">أيام</div>
-            </div>
-            <div class="time-box">
-                <span id="hours">0</span>
-                <div class="label">ساعات</div>
-            </div>
-            <div class="time-box">
-                <span id="minutes">0</span>
-                <div class="label">دقائق</div>
-            </div>
-            <div class="time-box">
-                <span id="seconds">0</span>
-                <div class="label">ثواني</div>
+        
+        <div class="discord-profile">
+            <img src="https://cdn.discordapp.com/avatars/674654457807765513/118bed0585d6aeb9a75ebcb8ff967239.png?size=1024" alt="User Avatar" class="avatar">
+            <div class="profile-info">
+                <div class="username">Snooker<span class="nitro-badge">NITRO</span></div>
+                <div class="discriminator"> </div>
             </div>
         </div>
-    </section>
-    <!-- Personalized Message -->
-    <section id="personal-message" class="hidden">
-        <h2>رسالة خاصة</h2>
-        <p class="story-text">
-            يا لما، كل عام وأنتِ بألف خير! 🎂<br>
-            أنتي مصدر إلهام وسعادة لكل من حولك. أتمنى لك يومًا مليئًا بالحب والفرح والذكريات الجميلة.
-        </p>
-    </section>
-    <!-- Virtual Gift Unboxing -->
-    <section id="gift-unboxing" class="hidden">
-        <h2>افتح هديتك!</h2>
-        <div class="gift-box" onclick="revealGift()">
-            🎁
+        
+        <div class="gift-container">
+            <div class="gift-box" id="giftBox">
+                <div class="front"></div>
+                <div class="back"></div>
+            </div>
         </div>
-        <p id="gift-message" class="hidden">مفاجأة! 🎉   https://discord.gift/MFUNppEPtptt9V8v</p>
-    </section>
-    <!-- Footer -->
-    <footer>
-        <p>صمم بواسطة <span class="highlight">i3z</span> مع ❤️</p>
-    </footer>
-    <!-- Audio -->
-    <audio id="birthday-song" src="music/birthday-song.mp3" preload="auto"></audio>
-    <audio id="background-music" src="music/favorite-song.mp3" loop preload="auto"></audio>
-    <audio id="yay-sound" src="sounds/yay.mp3" preload="auto"></audio>
-    <!-- Audio Controls -->
-    <div id="audio-controls" class="audio-controls">
-        <button id="pause-bg-music">⏸️ إيقاف الموسيقى</button>
-        <button id="mute-bg-music">🔊 كتم</button>
+        
+        <button class="redeem-btn" id="redeemBtn" disabled>Redeem Discord Nitro</button>
+        
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">✓</div>
+            <h2>اويلي مجودكا</h2>
+            <p>تستاهل النيترو </p>
+        </div>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const giftBox = document.getElementById('giftBox');
+            const redeemBtn = document.getElementById('redeemBtn');
+            const successMessage = document.getElementById('successMessage');
+            let isOpened = false;
+            
+            // Create ripple effect on gift box click
+            giftBox.addEventListener('click', function(e) {
+                if (!isOpened) {
+                    // Open the gift
+                    giftBox.classList.add('opened');
+                    isOpened = true;
+                    redeemBtn.disabled = false;
+                    
+                    // Create ripple effect
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    this.appendChild(ripple);
+                    
+                    // Position the ripple
+                    const rect = this.getBoundingClientRect();
+                    ripple.style.left = (e.clientX - rect.left) + 'px';
+                    ripple.style.top = (e.clientY - rect.top) + 'px';
+                    
+                    // Remove ripple after animation
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                    
+                    // Create confetti
+                    createConfetti();
+                }
+            });
+            
+            // Redeem button functionality
+            redeemBtn.addEventListener('click', function() {
+                this.disabled = true;
+                this.textContent = 'Activating...';
+                
+                // Simulate API call
+                setTimeout(() => {
+                    successMessage.style.display = 'block';
+                    this.style.display = 'none';
+                    createConfetti(true); // Big confetti celebration
+                }, 1500);
+            });
+            
+            // Confetti effect
+            function createConfetti(big = false) {
+                const colors = ['#5865F2', '#EB459E', '#57F287', '#FEE75C', '#ED4245'];
+                const container = document.querySelector('.container');
+                const confettiCount = big ? 100 : 30;
+                const sizeRange = big ? [8, 15] : [5, 10];
+                
+                for (let i = 0; i < confettiCount; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
+                    
+                    // Random properties
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const size = Math.random() * (sizeRange[1] - sizeRange[0]) + sizeRange[0];
+                    const posX = Math.random() * 100;
+                    const animationDuration = (Math.random() * 3 + 2) + 's';
+                    const animationDelay = (Math.random() * 0.5) + 's';
+                    
+                    // Apply styles
+                    confetti.style.backgroundColor = color;
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                    confetti.style.left = `${posX}%`;
+                    confetti.style.top = `-20px`;
+                    confetti.style.opacity = '1';
+                    
+                    // Animation
+                    confetti.style.animation = `fall ${animationDuration} ${animationDelay} linear forwards`;
+                    
+                    // Add to container
+                    container.appendChild(confetti);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, (parseFloat(animationDuration) + parseFloat(animationDelay)) * 1000);
+                }
+                
+                // Add CSS for falling animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes fall {
+                        0% {
+                            transform: translateY(0) rotate(0deg);
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translateY(calc(100vh + 20px)) rotate(${Math.random() * 360}deg);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        });
+    </script>
 </body>
 </html>
